@@ -38,6 +38,38 @@
 #
 #     When set to "1", do not include "DWIM" suggestions in git-checkout
 #     completion (e.g., completing "foo" when "origin/foo" exists).
+#
+#   GIT_COMPLETION_CMD_GROUPS
+#
+#     When set, "git --list-cmds=$GIT_COMPLETION_CMD_GROUPS" will be
+#     used to get the list of completable commands. The default is
+#     "mainporcelain,others,list-complete" (in English: all porcelain
+#     commands and external ones are included. Certain non-porcelain
+#     commands are also marked for completion in command-list.txt).
+#     You could for example complete all commands with
+#
+#         GIT_COMPLETION_CMD_GROUPS=main,others
+#
+#     Or you could go with defaults add some extra commands specified
+#     in the configuration variable completion.commands [1] with
+#
+#         GIT_COMPLETION_CMD_GROUPS=mainporcelain,others,list-complete,config
+#
+#     Or go completely custom group with
+#
+#         GIT_COMPLETION_CMD_GROUPS=config
+#
+#     Or you could even play with other command categories found in
+#     command-list.txt.
+#
+#     [1] Note that completion.commands should not be per-repository
+#         since the command list is generated once and cached.
+#
+#         completion.commands could be used to exclude commands as
+#         well.  If a command in this list begins with '-', then it
+#         will be excluded from the list of commands gathered by the
+#         groups specified before "config" in
+#         $GIT_COMPLETION_CMD_GROUPS.
 
 case "$COMP_WORDBREAKS" in
 *:*) : great ;;
@@ -840,6 +872,9 @@ __git_commands () {
 		if test -n "$GIT_TESTING_PORCELAIN_COMMAND_LIST"
 		then
 			printf "%s" "$GIT_TESTING_PORCELAIN_COMMAND_LIST"
+		elif test -n "$GIT_COMPLETION_CMD_GROUPS"
+		then
+			git --list-cmds="$GIT_COMPLETION_CMD_GROUPS"
 		else
 			git --list-cmds=list-mainporcelain,others,list-complete
 		fi

@@ -53,6 +53,8 @@ static int list_cmds(const char *spec)
 			list_all_main_cmds(&list);
 		else if (len == 6 && !strncmp(spec, "others", 6))
 			list_all_other_cmds(&list);
+		else if (len == 6 && !strncmp(spec, "config", 6))
+			list_cmds_by_config(&list);
 		else if (len > 5 && !strncmp(spec, "list-", 5)) {
 			struct strbuf sb = STRBUF_INIT;
 
