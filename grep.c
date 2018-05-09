@@ -995,6 +995,9 @@ static void compile_grep_patterns_real(struct grep_opt *opt)
 	else if (!opt->extended && !opt->debug)
 		return;
 
+	if (opt->columnnum && opt->extended)
+		die(_("--column and extended expressions cannot be combined"));
+
 	p = opt->pattern_list;
 	if (p)
 		opt->pattern_expression = compile_pattern_expr(&p);
