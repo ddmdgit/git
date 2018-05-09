@@ -99,6 +99,28 @@ do
 		test_cmp expected actual
 	'
 
+	test_expect_success "grep -w $L (with --column)" '
+		{
+			echo ${HC}file:5:foo mmap bar
+			echo ${HC}file:14:foo_mmap bar mmap
+			echo ${HC}file:5:foo mmap bar_mmap
+			echo ${HC}file:14:foo_mmap bar mmap baz
+		} >expected &&
+		git grep --column -w -e mmap $H >actual &&
+		test_cmp expected actual
+	'
+
+	test_expect_success "grep -w $L (with --line-number, --column)" '
+		{
+			echo ${HC}file:1:5:foo mmap bar
+			echo ${HC}file:3:14:foo_mmap bar mmap
+			echo ${HC}file:4:5:foo mmap bar_mmap
+			echo ${HC}file:5:14:foo_mmap bar mmap baz
+		} >expected &&
+		git grep -n --column -w -e mmap $H >actual &&
+		test_cmp expected actual
+	'
+
 	test_expect_success "grep -w $L" '
 		{
 			echo ${HC}file:1:foo mmap bar
@@ -1588,6 +1610,16 @@ test_expect_success 'grep does not report i-t-a and assume unchanged with -L' '
 	git ls-files | grep -v "^intend-to-add-assume-unchanged\$" >expected &&
 	git grep -L "nonexistent_string" >actual &&
 	test_cmp expected actual
+'
+
+test_expect_success 'grep does not allow --column, --invert-match' '
+	test_must_fail git grep --column --invert-match pat 2>err &&
+	test_i18ngrep "\-\-column and \-\-invert-match cannot be combined" err
+'
+
+test_expect_success 'grep does not allow --column, extended' '
+	test_must_fail git grep --column --not -e pat 2>err &&
+	test_i18ngrep "\-\-column and extended expressions cannot be combined" err
 '
 
 test_done
